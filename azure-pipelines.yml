@@ -12,16 +12,24 @@ pool:
 variables:
   buildConfiguration: 'Release'
 
- 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '16.13.1'
-- task: NuGetCommand@2
-  displayName: 'NuGet restore'
-  inputs:
-    command: 'restore'
-    restoreSolution: '$(Parameters.solution)'
-    feedsToUse: 'select'
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+jobs:
+- job: Job_1
+  displayName: Agent Job 1 - Build
+  pool:
+    vmImage: windows-2019 
+  steps:
+  - task: NodeTool@0
+    displayName: Use Node 16
+    inputs:
+      versionSpec: '16.13.1'
+  - task: CmdLine@2
+    inputs:
+      script: 'npm run build dev'
+  - task: NuGetCommand@2
+    displayName: 'NuGet restore'
+    inputs:
+      command: 'restore'
+      restoreSolution: '$(Parameters.solution)'
+      feedsToUse: 'select'
+  - script: dotnet build --configuration $(buildConfiguration)
+    displayName: 'dotnet build $(buildConfiguration)'
